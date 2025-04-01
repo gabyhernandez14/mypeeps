@@ -116,7 +116,6 @@ function App() {
       try {
         const storedPersons = localStorage.getItem('persons')
         const storedGroups = localStorage.getItem('groups')
-        const storedPosts = localStorage.getItem('posts')
         
         if (storedPersons) {
           const parsedPersons = JSON.parse(storedPersons)
@@ -125,10 +124,6 @@ function App() {
         if (storedGroups) {
           const parsedGroups = JSON.parse(storedGroups)
           setGroups(parsedGroups)
-        }
-        if (storedPosts) {
-          const parsedPosts = JSON.parse(storedPosts)
-          setPosts(parsedPosts)
         }
       } catch (error) {
         console.error('Error loading data from localStorage:', error)
@@ -147,13 +142,10 @@ function App() {
       if (groups.length > 0) {
         localStorage.setItem('groups', JSON.stringify(groups))
       }
-      if (posts.length > 0) {
-        localStorage.setItem('posts', JSON.stringify(posts))
-      }
     } catch (error) {
       console.error('Error saving data to localStorage:', error)
     }
-  }, [persons, groups, posts])
+  }, [persons, groups])
 
   useEffect(() => {
     if (user) {
@@ -172,20 +164,17 @@ function App() {
           postService.getPosts(user.uid)
         ])
         
-        // Merge Firebase data with localStorage data
+        // Merge Firebase data with localStorage data for persons and groups
         const mergedPersons = [...persons, ...userPersons.filter(
           (fp) => !persons.some((lp) => lp.id === fp.id)
         )]
         const mergedGroups = [...groups, ...userGroups.filter(
           (fg) => !groups.some((lg) => lg.id === fg.id)
         )]
-        const mergedPosts = [...posts, ...userPosts.filter(
-          (fp) => !posts.some((lp) => lp.id === fp.id)
-        )]
 
         setPersons(mergedPersons)
         setGroups(mergedGroups)
-        setPosts(mergedPosts)
+        setPosts(userPosts) // Use Firebase posts directly
       } catch (error) {
         console.error('Error loading data from Firebase:', error)
       }
